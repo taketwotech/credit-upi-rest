@@ -109,6 +109,11 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+GLOBAL_SETTINGS = {
+    'REST_URL': 'https://apigwuat.icicibank.com:8443/api/v1/portal/upi2/',
+    'API_KEY': 'l7xxd677b575a1484d84933815a7984c4551'
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
