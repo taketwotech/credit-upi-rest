@@ -13,6 +13,9 @@ def random_number(n):
     range_end = (10**n)-1
     return randint(range_start, range_end)
 
+def generate_limit():
+    print(randint(5,10))
+    return randint(5,10)*1000
 
 class Upi(models.Model):
     author = models.ForeignKey(
@@ -40,6 +43,7 @@ class CreditUpi(models.Model):
     mobile = models.IntegerField(unique=True)
     pin = models.IntegerField(default=random_number(4))
     status = models.CharField(max_length=1, default='P')
+    limit = models.IntegerField(default=generate_limit())
     created = models.DateTimeField(default=timezone.now)
     modified = models.DateTimeField(default=timezone.now)
 
