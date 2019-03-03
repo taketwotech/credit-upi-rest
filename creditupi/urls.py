@@ -17,12 +17,13 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 from creditupi.quickstart import views
-from creditupi.icici.views import ApiExplorer
+from creditupi.icici.views import ApiExplorer, UpiExplorer, CreditExplorer
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
 router.register(r'api', ApiExplorer, 'api')
+router.register(r'upi', UpiExplorer, 'upi')
+router.register(r'credit', CreditExplorer, 'credit')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
