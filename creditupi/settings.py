@@ -25,7 +25,7 @@ SECRET_KEY = 'md(vy1v@yi5!b4@wt!jr^bv9^rh57fha665k_u#t-t6pvcx%sx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.241.134.129']
+ALLOWED_HOSTS = ['192.241.134.129', 'localhost']
 
 # Application definition
 
@@ -112,6 +112,10 @@ REST_FRAMEWORK = {
 GLOBAL_SETTINGS = {
     'REST_URL': 'https://apigwuat.icicibank.com:8443/api/v1/portal/upi2/',
     'API_KEY': 'l7xxd677b575a1484d84933815a7984c4551'
+}
+
+REST_AUTH_SERIALIZERS = {
+    'TOKEN_SERIALIZER': 'creditupi.icici.serializers.TokenSerializer'
 }
 
 # Internationalization

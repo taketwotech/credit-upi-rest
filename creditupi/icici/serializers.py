@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from creditupi.icici.models import Upi
+from rest_framework.authtoken.models import Token
 
 class RequestSerializer(serializers.Serializer):
     targetPoint = serializers.CharField()
@@ -32,9 +33,16 @@ class ErrorSerializer(serializers.Serializer):
 class CreditSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     account_no = serializers.IntegerField()
+    limit = serializers.IntegerField()
     created_date =  serializers.DateTimeField()
     mobile = serializers.IntegerField()
     pin = serializers.IntegerField()
     status = serializers.CharField()
     created = serializers.DateTimeField()
     modified = serializers.DateTimeField()
+
+class TokenSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Token
+        fields = ('key', 'user')

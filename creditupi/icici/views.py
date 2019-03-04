@@ -22,15 +22,28 @@ class UpiExplorer(viewsets.ViewSet):
     # serializer_class = UpiSerializer
 
     def list(self, request):
+        print("IN")
         queryset = Upi.objects.all().order_by('-pk')
         return Response(UpiSerializer(queryset, many=True).data)
 
     def retrieve(self, request, pk=None):
-        try:
-            queryset = UpiSerializer(Upi.objects.get(virtual_address=pk)).data
-        except Upi.DoesNotExist:
-            queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
-            #handle case when user with that id does not exist
+        if request.method == 'GET':
+            print(request.data)
+            if request.GET.get('type', '') == 'va':
+                try:
+                    queryset = UpiSerializer(Upi.objects.get(virtual_address=pk)).data
+                except Upi.DoesNotExist:
+                    queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+            else:
+                try:
+                    user = User.objects.get(username=pk)
+                    queryset = Upi.objects.filter(author=user)
+                    if (queryset.count() == 0):
+                        queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+                    else:
+                        queryset = UpiSerializer(queryset, many=True).data
+                except User.DoesNotExist:
+                    queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
         return Response(queryset)
 
     def create(self, request):
@@ -47,7 +60,7 @@ class UpiExplorer(viewsets.ViewSet):
                         seq_no=request.data.get('seq-no'),
                         channel_code=request.data.get('channel-code'),
                         virtual_address=request.data.get('virtual-address'),
-                        author=User.objects.get(pk=request.data.get('author'))
+                        author=User.objects.get(username=request.data.get('author'))
                     )
                     upi.save()
                     queryset = UpiSerializer(Upi.objects.get(pk=upi.id)).data
@@ -59,12 +72,14 @@ class UpiExplorer(viewsets.ViewSet):
 class CreditExplorer(viewsets.ViewSet):
 
     def list(self, request):
+        print("IN")
         queryset = CreditUpi.objects.all().order_by('-pk')
         return Response(CreditSerializer(queryset, many=True).data)
 
     def retrieve(self, request, pk=None):
+        print("IN11")
         try:
-            queryset = CreditSerializer(CreditUpi.objects.get(pk=pk)).data
+            queryset = CreditSerializer(CreditUpi.objects.get(author=User.objects.get(username=pk))).data
         except CreditUpi.DoesNotExist:
             queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
             #handle case when user with that id does not exist
@@ -75,7 +90,7 @@ class CreditExplorer(viewsets.ViewSet):
             try:
                 upi = CreditUpi.objects.create(
                     mobile=request.data.get('mobile'),
-                    author=User.objects.get(pk=request.data.get('author'))
+                    author=User.objects.get(username=request.data.get('author'))
                 )
                 upi.save()
                 queryset = CreditSerializer(CreditUpi.objects.get(pk=upi.id)).data
