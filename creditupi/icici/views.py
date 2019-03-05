@@ -77,7 +77,6 @@ class CreditExplorer(viewsets.ViewSet):
         return Response(CreditSerializer(queryset, many=True).data)
 
     def retrieve(self, request, pk=None):
-        print("IN11")
         try:
             queryset = CreditSerializer(CreditUpi.objects.get(author=User.objects.get(username=pk))).data
         except CreditUpi.DoesNotExist:
@@ -94,6 +93,18 @@ class CreditExplorer(viewsets.ViewSet):
                 )
                 upi.save()
                 queryset = CreditSerializer(CreditUpi.objects.get(pk=upi.id)).data
+            except Exception as e:
+                print(e)
+                queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+            return Response(queryset)
+
+    def update(self, request, pk=None):
+        if request.method == 'PUT':
+            try:
+                upi = CreditUpi.objects.get(pk=pk)
+                upi.status = request.data.get('status', None)
+                upi.save()
+                queryset = CreditSerializer(upi).data
             except Exception as e:
                 print(e)
                 queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
