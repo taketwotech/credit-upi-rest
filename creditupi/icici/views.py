@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework import viewsets
 from creditupi.icici.serializers import UpiSerializer, ErrorSerializer, CreditSerializer
 from rest_framework.response import Response
-from creditupi.icici.models import Upi, CreditUpi
+from creditupi.icici.models import Upi, CreditUpi, Users
 from django.contrib.auth.models import User
 import requests
 

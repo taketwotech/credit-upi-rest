@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.conf import settings
 from datetime import datetime, timedelta
 from random import randint
+from django.contrib.auth.models import User
 
 def get_default_my_date():
     print(datetime.now().strftime('%s'))
@@ -61,3 +62,7 @@ class Transactions(models.Model):
     amount = models.IntegerField() 
     status = models.CharField(max_length=1)  
     trans_key = models.CharField(max_length=100)
+
+class Users(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    mobile = models.CharField(max_length=10)
