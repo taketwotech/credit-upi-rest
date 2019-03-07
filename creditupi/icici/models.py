@@ -27,7 +27,7 @@ class Upi(models.Model):
     device_id = models.CharField(max_length=15)
     seq_no =  models.CharField(max_length=50)
     channel_code = models.CharField(max_length=10)
-    virtual_address = models.CharField(max_length=10)
+    virtual_address = models.CharField(max_length=10, unique=True)
     created = models.DateTimeField(default=timezone.now)
     modified = models.DateTimeField(default=timezone.now)
 
@@ -38,6 +38,11 @@ class CreditUpi(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+    )
+    vpa = models.ForeignKey(
+        'Upi',
+        null=True,
+        on_delete=models.CASCADE
     )
     account_no = models.IntegerField(default=get_default_my_date)
     created_date =  models.DateTimeField(default=timezone.now)
@@ -62,6 +67,11 @@ class Transactions(models.Model):
     amount = models.IntegerField() 
     status = models.CharField(max_length=1)  
     trans_key = models.CharField(max_length=100)
+    trans_type = models.CharField(max_length=2, default = 'CR')
+    created = models.DateTimeField(default=timezone.now)
+    modified = models.DateTimeField(default=timezone.now)
+    def __str__(self):
+        return str(self.trans_key)
 
 class Users(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
