@@ -76,3 +76,20 @@ class Transactions(models.Model):
 class Users(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile = models.CharField(max_length=10)
+
+class Beneficiary(models.Model):
+    class Meta:
+        unique_together = (('author', 'vpa'),)    
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    vpa = models.ForeignKey(
+        'Upi',
+        null=True,
+        on_delete=models.CASCADE
+    )
+    created = models.DateTimeField(default=timezone.now)
+    modified = models.DateTimeField(default=timezone.now)
+

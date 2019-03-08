@@ -17,14 +17,14 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 from creditupi.quickstart import views
-from creditupi.icici.views import ApiExplorer, UpiExplorer, CreditExplorer
+from creditupi.icici.views import ApiExplorer, UpiExplorer, CreditExplorer, BeneficiaryExplorer
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'api', ApiExplorer, 'api')
 router.register(r'upi', UpiExplorer, 'upi')
 router.register(r'credit', CreditExplorer, 'credit')
-
+router.register(r'beneficiary', BeneficiaryExplorer, 'beneficiary')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),

@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.conf import settings
 from rest_framework import viewsets
-from creditupi.icici.serializers import UpiSerializer, ErrorSerializer, CreditSerializer
+from creditupi.icici.serializers import UpiSerializer, ErrorSerializer, \
+        CreditSerializer, BeneficiarySerializer
 from rest_framework.response import Response
-from creditupi.icici.models import Upi, CreditUpi, Users
+from creditupi.icici.models import Upi, CreditUpi, Users, Beneficiary
 from django.contrib.auth.models import User
 import requests
 
@@ -28,10 +29,11 @@ class UpiExplorer(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         if request.method == 'GET':
-            print(request.data)
             if request.GET.get('type', '') == 'va':
                 try:
-                    queryset = UpiSerializer(Upi.objects.get(virtual_address=pk)).data
+                    u = Upi.objects.get(virtual_address=pk)
+                    print(u.author)
+                    queryset = UpiSerializer(u).data
                 except Upi.DoesNotExist:
                     queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
             else:
@@ -72,7 +74,6 @@ class UpiExplorer(viewsets.ViewSet):
 class CreditExplorer(viewsets.ViewSet):
 
     def list(self, request):
-        print("IN")
         queryset = CreditUpi.objects.all().order_by('-pk')
         return Response(CreditSerializer(queryset, many=True).data)
 
@@ -109,3 +110,34 @@ class CreditExplorer(viewsets.ViewSet):
                 print(e)
                 queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
             return Response(queryset)
+
+class BeneficiaryExplorer(viewsets.ViewSet):
+    def list(self, request):
+        queryset = Beneficiary.objects.all().order_by('-pk')
+        return Response(BeneficiarySerializer(queryset, many=True).data)
+
+    def create(self, request):
+        if request.method == 'POST':
+            try:
+                beneficiary = Beneficiary.objects.create(
+                    author=User.objects.get(username=request.data.get('author')),
+                    vpa=Upi.objects.get(virtual_address=request.data.get('vpa'))
+                )
+                beneficiary.save()
+                queryset = BeneficiarySerializer(Beneficiary.objects.get(pk=beneficiary.id)).data
+            except Exception as e:
+                print(e)
+                queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+            return Response(queryset)
+
+    def retrieve(self, request, pk=None):
+        try:
+            user = User.objects.get(username=pk)
+            queryset = Beneficiary.objects.filter(author=user)
+            if (queryset.count() == 0):
+                queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+            else:
+                queryset = BeneficiarySerializer(queryset, many=True).data
+        except User.DoesNotExist:
+            queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+        return Response(queryset)

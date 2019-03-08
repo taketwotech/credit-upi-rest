@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from creditupi.icici.models import Upi
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 
 class RequestSerializer(serializers.Serializer):
     targetPoint = serializers.CharField()
@@ -25,6 +26,11 @@ class UpiSerializer(serializers.Serializer):
     virtual_address = serializers.CharField()
     created = serializers.DateTimeField()
     modified = serializers.DateTimeField()
+    author = serializers.PrimaryKeyRelatedField(read_only=True)
+    first_name = serializers.CharField(source = "author.first_name")
+    last_name = serializers.CharField(source = "author.last_name")
+    username = serializers.CharField(source = "author.username")
+
 
 class ErrorSerializer(serializers.Serializer):
     success = serializers.BooleanField()
@@ -46,3 +52,10 @@ class TokenSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Token
         fields = ('key', 'user')
+
+class BeneficiarySerializer(serializers.Serializer):
+    author = serializers.PrimaryKeyRelatedField(read_only=True)
+    first_name = serializers.CharField(source = "author.first_name")
+    last_name = serializers.CharField(source = "author.last_name")
+    vpa = serializers.PrimaryKeyRelatedField(read_only=True)
+    virtual_address = serializers.CharField(source = "vpa.virtual_address")
