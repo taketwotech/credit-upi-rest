@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from creditupi.icici.models import Upi, CreditUpi, Users, Beneficiary, Transactions
 from django.contrib.auth.models import User
 import requests
+from django.db.models import Sum
 
 class ApiExplorer(viewsets.ViewSet):
     def create(self, request):
@@ -79,7 +80,11 @@ class CreditExplorer(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         try:
-            queryset = CreditSerializer(CreditUpi.objects.get(author=User.objects.get(username=pk))).data
+            cupi = CreditUpi.objects.get(author=User.objects.get(username=pk))
+            trans = Transactions.objects.filter(author=User.objects.get(username=pk), credit_upi_id=cupi).aggregate(Sum('amount'))
+            cupi.limit = cupi.limit
+            cupi.used = trans.get('amount__sum', 0)
+            queryset = CreditSerializer(cupi).data
         except CreditUpi.DoesNotExist:
             queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
             #handle case when user with that id does not exist

@@ -46,6 +46,7 @@ class CreditSerializer(serializers.Serializer):
     status = serializers.CharField()
     created = serializers.DateTimeField()
     modified = serializers.DateTimeField()
+    used = serializers.IntegerField()
 
 class TokenSerializer(serializers.HyperlinkedModelSerializer):
 

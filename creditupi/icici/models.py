@@ -70,8 +70,9 @@ class Transactions(models.Model):
     trans_type = models.CharField(max_length=2, default = 'CR')
     created = models.DateTimeField(default=timezone.now)
     modified = models.DateTimeField(default=timezone.now)
+
     def __str__(self):
-        return str(self.trans_key)
+        return str(self.author)
 
 class Users(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
