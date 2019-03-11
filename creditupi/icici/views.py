@@ -146,8 +146,9 @@ class PaymentExplorer(viewsets.ViewSet):
     def create(self, request):
         if request.method == 'POST':
             try:
+                author = User.objects.get(username=request.data.get('author'))
                 payment = Transactions.objects.create(
-                    author = User.objects.get(username=request.data.get('author')),
+                    author = author,
                     credit_upi_id = CreditUpi.objects.get(author=author),
                     amount = request.data.get('amount', 0),
                     status = 'A',
