@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 from creditupi.quickstart import views
-from creditupi.icici.views import ApiExplorer, UpiExplorer, CreditExplorer, BeneficiaryExplorer
+from creditupi.icici.views import ApiExplorer, UpiExplorer, CreditExplorer, BeneficiaryExplorer, PaymentExplorer
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -25,6 +25,8 @@ router.register(r'api', ApiExplorer, 'api')
 router.register(r'upi', UpiExplorer, 'upi')
 router.register(r'credit', CreditExplorer, 'credit')
 router.register(r'beneficiary', BeneficiaryExplorer, 'beneficiary')
+router.register(r'payment', PaymentExplorer, 'payment')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),

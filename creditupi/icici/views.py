@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from creditupi.icici.serializers import UpiSerializer, ErrorSerializer, \
         CreditSerializer, BeneficiarySerializer
 from rest_framework.response import Response
-from creditupi.icici.models import Upi, CreditUpi, Users, Beneficiary
+from creditupi.icici.models import Upi, CreditUpi, Users, Beneficiary, Transactions
 from django.contrib.auth.models import User
 import requests
 
@@ -141,3 +141,22 @@ class BeneficiaryExplorer(viewsets.ViewSet):
         except User.DoesNotExist:
             queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
         return Response(queryset)
+
+class PaymentExplorer(viewsets.ViewSet):
+    def create(self, request):
+        if request.method == 'POST':
+            try:
+                payment = Transactions.objects.create(
+                    author = User.objects.get(username=request.data.get('author')),
+                    credit_upi_id = CreditUpi.objects.get(author=author),
+                    amount = request.data.get('amount', 0),
+                    status = 'A',
+                    trans_type = 'CR'
+                )
+                payment.save()
+                queryset = ErrorSerializer({"success": True, "message": "No data found"}).data
+            except Exception as e:
+                print(e)
+                queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+            return Response(queryset)
+
