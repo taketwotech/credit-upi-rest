@@ -46,7 +46,8 @@ class CreditSerializer(serializers.Serializer):
     status = serializers.CharField()
     created = serializers.DateTimeField()
     modified = serializers.DateTimeField()
-    used = serializers.IntegerField()
+    used = serializers.IntegerField(required=False, default=0)
+    virtual_address = serializers.CharField(source = "vpa.virtual_address", default=None)
 
 class TokenSerializer(serializers.HyperlinkedModelSerializer):
 

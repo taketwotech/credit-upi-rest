@@ -83,7 +83,7 @@ class CreditExplorer(viewsets.ViewSet):
             cupi = CreditUpi.objects.get(author=User.objects.get(username=pk))
             trans = Transactions.objects.filter(author=User.objects.get(username=pk), credit_upi_id=cupi).aggregate(Sum('amount'))
             cupi.limit = cupi.limit
-            cupi.used = trans.get('amount__sum', 0)
+            cupi.used = 0 if (trans.get('amount__sum') == None) else trans.get('amount__sum')
             queryset = CreditSerializer(cupi).data
         except CreditUpi.DoesNotExist:
             queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
@@ -108,7 +108,10 @@ class CreditExplorer(viewsets.ViewSet):
         if request.method == 'PUT':
             try:
                 upi = CreditUpi.objects.get(pk=pk)
-                upi.status = request.data.get('status', None)
+                if request.data.get('vpa') is not None:
+                    upi.vpa = Upi.objects.get(virtual_address=request.data.get('vpa'))
+                if request.data.get('status') is not None:
+                    upi.status = request.data.get('status', None)
                 upi.save()
                 queryset = CreditSerializer(upi).data
             except Exception as e:
