@@ -66,8 +66,9 @@ class Transactions(models.Model):
     trans_date = models.DateTimeField(default=timezone.now)
     amount = models.IntegerField() 
     status = models.CharField(max_length=1)  
-    trans_key = models.CharField(max_length=100)
+    trans_key = models.CharField(max_length=100, default=random_number(10))
     trans_type = models.CharField(max_length=2, default = 'CR')
+    description = models.TextField(null=True)
     created = models.DateTimeField(default=timezone.now)
     modified = models.DateTimeField(default=timezone.now)
 

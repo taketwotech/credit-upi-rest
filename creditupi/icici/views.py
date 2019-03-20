@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.conf import settings
 from rest_framework import viewsets
 from creditupi.icici.serializers import UpiSerializer, ErrorSerializer, \
-        CreditSerializer, BeneficiarySerializer
+        CreditSerializer, BeneficiarySerializer, TransactionSerializer
 from rest_framework.response import Response
 from creditupi.icici.models import Upi, CreditUpi, Users, Beneficiary, Transactions
 from django.contrib.auth.models import User
@@ -160,7 +160,8 @@ class PaymentExplorer(viewsets.ViewSet):
                     credit_upi_id = CreditUpi.objects.get(author=author),
                     amount = request.data.get('amount', 0),
                     status = 'A',
-                    trans_type = 'CR'
+                    trans_type = request.data.get('trans_type', 'CR'),
+                    description = request.data.get('description')
                 )
                 payment.save()
                 queryset = ErrorSerializer({"success": True, "message": "No data found"}).data
@@ -169,3 +170,14 @@ class PaymentExplorer(viewsets.ViewSet):
                 queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
             return Response(queryset)
 
+    def retrieve(self, request, pk=None):
+        try:
+            user = User.objects.get(username=pk)
+            queryset = Transactions.objects.filter(author=user)
+            if (queryset.count() == 0):
+                queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+            else:
+                queryset = TransactionSerializer(queryset, many=True).data
+        except User.DoesNotExist:
+            queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
+        return Response(queryset)

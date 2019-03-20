@@ -57,7 +57,14 @@ class TokenSerializer(serializers.HyperlinkedModelSerializer):
 
 class BeneficiarySerializer(serializers.Serializer):
     author = serializers.PrimaryKeyRelatedField(read_only=True)
-    first_name = serializers.CharField(source = "author.first_name")
-    last_name = serializers.CharField(source = "author.last_name")
     vpa = serializers.PrimaryKeyRelatedField(read_only=True)
     virtual_address = serializers.CharField(source = "vpa.virtual_address")
+    first_name = serializers.CharField(source = "vpa.author.first_name")
+    last_name = serializers.CharField(source = "vpa.author.last_name")
+
+class TransactionSerializer(serializers.Serializer):
+    trans_date =  serializers.DateTimeField()
+    amount = serializers.IntegerField() 
+    trans_key = serializers.CharField()
+    trans_type = serializers.CharField()
+    description = serializers.CharField()
