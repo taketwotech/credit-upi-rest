@@ -81,9 +81,11 @@ class CreditExplorer(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         try:
             cupi = CreditUpi.objects.get(author=User.objects.get(username=pk))
-            trans = Transactions.objects.filter(author=User.objects.get(username=pk), credit_upi_id=cupi).aggregate(Sum('amount'))
+            trans = Transactions.objects.filter(author=User.objects.get(username=pk), credit_upi_id=cupi, trans_type='DB').aggregate(Sum('amount'))
+            trans_credited = Transactions.objects.filter(author=User.objects.get(username=pk), credit_upi_id=cupi, trans_type='CR').aggregate(Sum('amount'))
             cupi.limit = cupi.limit
             cupi.used = 0 if (trans.get('amount__sum') == None) else trans.get('amount__sum')
+            cupi.credited = 0 if (trans_credited.get('amount__sum') == None) else trans_credited.get('amount__sum')
             queryset = CreditSerializer(cupi).data
         except CreditUpi.DoesNotExist:
             queryset = ErrorSerializer({"success": False, "message": "No data found"}).data
